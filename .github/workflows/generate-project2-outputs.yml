@@ -1,0 +1,44 @@
+name: Generate Project 2 outputs
+
+on:
+  push:
+    paths:
+      - ".github/workflows/generate-project2-outputs.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Project 2 analysis
+        run: python philipallen04_pr02_notebook.py
+
+      - name: Commit generated figures
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add philipallen04_pr02_validation.png
+          git add philipallen04_pr02_unconstrained.png
+          git add philipallen04_pr02_constrained.png
+          git add philipallen04_pr02_grouped.csv
+          git add philipallen04_pr02_validation.csv
+          git add philipallen04_pr02_optimization_runs.csv
+          git add philipallen04_pr02_penalty.csv
+          git add philipallen04_pr02_recommendation.csv
+          if ! git diff --cached --quiet; then
+            git commit -m "Add generated Project 2 figures"
+            git push
+          fi
